@@ -1,0 +1,8 @@
+<players root="gfx/characters/costumes/"
+         portraitroot="gfx/ui/stage/"
+         nameimageroot="gfx/ui/boss/">
+	<player id="40" name="#TRINKETER_NAME" skin="Character_001b_Isaac.png" costume="79" hp="6" bombs="0"
+	        nameimage="PlayerName_01_Isaac.png"
+	        portrait="PlayerPortrait_Isaac_b.png" skinColor="-1"
+	        birthright="#TRINKETER_BIRTHRIGHT" />
+</players>
