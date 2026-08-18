@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stringtable>
+	<info version="1.0" modified="2026-08-18" modifiedby="Yanloo"/>
+	<languages>
+		<language id="21" index="0" name="Key"/>
+		<language id="0" index="1" name="English"/>
+		<language id="2" index="2" name="Japanese"/>
+		<language id="11" index="3" name="Korean"/>
+		<language id="13" index="4" name="Chinese (Simple)"/>
+		<language id="10" index="5" name="Russian"/>
+		<language id="5" index="6" name="German"/>
+		<language id="4" index="7" name="Spanish"/>
+		<language id="3" index="8" name="French"/>
+	</languages>
+	<category name="Default">
+		<key name="TRINKETER_NAME">
+			<string>TRINKETER_NAME</string>
+			<string>Trinketer</string>
+			<string>Trinketer</string>
+			<string>Trinketer</string>
+			<string>饰品人</string>
+			<string>Trinketer</string>
+			<string>Trinketer</string>
+			<string>Trinketer</string>
+			<string>Trinketer</string>
+		</key>
+		<key name="TRINKETER_BIRTHRIGHT">
+			<string>TRINKETER_BIRTHRIGHT</string>
+			<string>Better trinkets, more trinkets!</string>
+			<string>Better trinkets, more trinkets!</string>
+			<string>Better trinkets, more trinkets!</string>
+			<string>更好的饰品、更多的饰品！</string>
+			<string>Better trinkets, more trinkets!</string>
+			<string>Better trinkets, more trinkets!</string>
+			<string>Better trinkets, more trinkets!</string>
+			<string>Better trinkets, more trinkets!</string>
+		</key>
+	</category>
+</stringtable>

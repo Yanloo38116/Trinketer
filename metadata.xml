@@ -1,0 +1,9 @@
+<metadata>
+	<name>Trinketer - 饰品人</name>
+	<version>1.0.0</version>
+	<author>Yanloo</author>
+	<description>添加全新角色 Trinketer（饰品人）。药丸倾向于变为咕噜药，低品质道具会被转化为随机饰品。</description>
+	<compatibility>
+		<repentance>true</repentance>
+	</compatibility>
+</metadata>
