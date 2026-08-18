@@ -1,7 +1,7 @@
 --[[
     Trinketer - 饰品人
     Author: Yanloo
-    Version: 1.0.0
+    Version: 1.0.1
     适配：以撒的结合：忏悔 (Repentance)
 ]]
 
@@ -14,9 +14,7 @@ local itemConfig = Isaac.GetItemConfig()
 -- ============================================================
 
 -- 角色类型（运行时根据 players.xml 中的 name 获取）
--- name 属性为 "#TRINKETER_NAME"，GetPlayerTypeByName 传入去掉 # 的键名
 local TRINKETER = Isaac.GetPlayerTypeByName("TRINKETER_NAME", false)
--- 兜底：部分版本可能需要带 # 或英文名
 if TRINKETER == -1 or TRINKETER == nil then
 	TRINKETER = Isaac.GetPlayerTypeByName("#TRINKETER_NAME", false)
 end
@@ -63,7 +61,6 @@ local function GetGulpPillColor()
             return color
         end
     end
-    -- 兜底：返回 0
     gulpPillColor = 0
     return 0
 end
@@ -117,21 +114,24 @@ mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function(_, isContinued)
 end)
 
 -- ============================================================
--- 机制 1：药丸转换
--- 所有途径生成的药丸，50% 概率在生成时变为咕噜药
+-- 机制 1：药丸转换（MC_PRE_ENTITY_SPAWN 方案）
+-- 在药丸实体生成前修改其 SubType，避免 MC_POST_PICKUP_INIT 中
+-- 修改 SubType 导致的药丸消失问题（仿照 PHD 等道具的替换思路）
 -- ============================================================
 
-mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, function(_, pickup)
-    if pickup.Variant ~= PickupVariant.PICKUP_PILL then return end
+mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function(_, entityType, variant, subtype, position, velocity, spawner, seed)
+    if entityType ~= EntityType.ENTITY_PICKUP then return end
+    if variant ~= PickupVariant.PICKUP_PILL then return end
 
     -- 仅当有 Trinketer 玩家在场时生效
     if not GetTrinketerPlayer() then return end
 
     -- 不影响金色药丸等特殊药丸
-    if pickup.SubType >= PillColor.PILL_GOLD then return end
+    if subtype >= PillColor.PILL_GOLD then return end
 
     if math.random() < 0.5 then
-        pickup.SubType = GetGulpPillColor()
+        -- 返回修改后的生成参数，实体将以咕噜药颜色生成
+        return {entityType, variant, GetGulpPillColor(), seed}
     end
 end)
 
@@ -203,8 +203,10 @@ mod:AddCallback(ModCallbacks.MC_USE_PILL, function(_, pillEffect, player, useFla
     else
         -- 普通饰品：若有金色版本，先替换为金色再让咕噜药吞下
         if HasGoldenVariant(baseID) then
-            player:TryRemoveTrinket(baseID)
-            player:AddTrinket(baseID + GOLDEN_FLAG, true)
+            -- 先移除当前普通饰品
+            player:TryRemoveTrinket(currentTrinket)
+            -- 添加对应金色版本（firstTime=false 避免重复触发拾取效果）
+            player:AddTrinket(baseID + GOLDEN_FLAG, false)
         end
     end
 end)
@@ -226,15 +228,15 @@ local function EID_Compat()
         "Quality 0 items are replaced by 2 random trinkets#" ..
         "Quality 1 items have 25% chance to be replaced by 3 random trinkets"
 
-    local birthrightDescZH = "使用咕噜药时：#" ..
-        "若当前饰品存在金色版本，则先变为金色版本再吞下#" ..
+    local birthrightDescZH = "更好的饰品、更多的饰品！#" ..
+        "使用咕噜药时，若当前饰品存在金色版本，则先变为金色版本再吞下#" ..
         "若当前饰品已是金色饰品，则在地面生成 1 个随机饰品"
 
-    local birthrightDescEN = "When using Gulp!:#" ..
-        "If current trinket has a golden variant, convert to golden before gulping#" ..
+    local birthrightDescEN = "Better trinkets, more trinkets!#" ..
+        "When using Gulp!, if current trinket has a golden variant, convert to golden before gulping#" ..
         "If current trinket is already golden, spawn a random trinket on the ground"
 
-    -- 角色描述（尝试多种可能的 EID API）
+    -- 角色描述
     if EID.addPlayerDescription then
         pcall(function()
             EID:addPlayerDescription(TRINKETER, playerDescZH, "饰品人", "zh_cn")
@@ -257,8 +259,3 @@ local function EID_Compat()
 end
 
 EID_Compat()
-
--- ============================================================
--- 调试日志（可选，取消注释启用）
--- ============================================================
--- Isaac.DebugString("[Trinketer] Mod loaded. PlayerType = " .. tostring(TRINKETER))
